@@ -7,22 +7,22 @@ from aiogram.types import Message, ChatPermissions
 from aiogram.filters import CommandStart, Command, CommandObject
 
 import app.database.requests as rq
-import app.processing as pc
+import app.helpers.processing as pc
 
 
-router = Router()
-router.message.filter(F.chat.type == 'supergroup', F.from_user.id == 5604550432)
+main_router = Router()
+main_router.message.filter(F.chat.type == 'supergroup')
 morch = MorphAnalyzer(lang='ru')
 triggers = ["пидор", "скот"]
 
 
-@router.message(CommandStart())
+@main_router.message(CommandStart())
 async def cmd_start(message: Message) -> Any:
-    #await rq.set_user(chat_name=message.chat.username, chat_id=message.chat.id)
+    await rq.set_user(chat_name=message.chat.title, chat_id=message.chat.id)
     await message.answer("Ну, здарова, Отец!")
 
 
-@router.message(Command(commands=['ban']))
+@main_router.message(Command(commands=['ban']))
 async def cmd_ban(message: Message, bot: Bot, command: CommandObject | None=None) -> Any:
     reply = message.reply_to_message
     if not reply:
@@ -35,7 +35,7 @@ async def cmd_ban(message: Message, bot: Bot, command: CommandObject | None=None
         await message.answer(f"{mention} пошёл нахуй!")
 
 
-@router.message(Command(commands=['mute']))
+@main_router.message(Command(commands=['mute']))
 async def cmd_mute(message: Message, bot: Bot, command: CommandObject | None=None) -> Any:
     reply = message.reply_to_message
     if not reply:
@@ -48,17 +48,17 @@ async def cmd_mute(message: Message, bot: Bot, command: CommandObject | None=Non
         await message.answer(f"{mention} завалил ебальничек!")
 
 
-@router.message(Command(commands=['help']))
+@main_router.message(Command(commands=['help']))
 async def cmd_help(message: Message) -> Any:
     await message.answer('Help!')
 
 
-@router.message(Command(commands=['all_commands']))
+@main_router.message(Command(commands=['all_commands']))
 async def cmd_all_commands(message: Message) -> Any:
     await message.answer('All commands!')
 
 
-@router.message(F.text)
+@main_router.message(F.text)
 async def profinity_filter(message: Message) -> Any:
     for word in message.text.lower().strip().split():
         parsed_morph = morch.parse(word)[0]
