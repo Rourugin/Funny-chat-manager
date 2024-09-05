@@ -18,7 +18,7 @@ triggers = ["пидор", "скот"]
 
 @main_router.message(CommandStart())
 async def cmd_start(message: Message) -> Any:
-    await rq.set_user(chat_name=message.chat.title, chat_id=message.chat.id)
+    await rq.set_user(chat_name=message.chat.title, chat_id=message.chat.id, user_id=message.from_user.id)
     await message.answer("Ну, здарова, Отец!")
 
 
@@ -35,7 +35,7 @@ async def cmd_ban(message: Message, bot: Bot, command: CommandObject | None=None
         await message.answer(f"{mention} пошёл нахуй!")
 
 
-@main_router.message(Command(commands=['mute']))
+@main_router.message(Command(commands=['mute']) or 'мут' in F.text.lower())
 async def cmd_mute(message: Message, bot: Bot, command: CommandObject | None=None) -> Any:
     reply = message.reply_to_message
     if not reply:
@@ -50,12 +50,12 @@ async def cmd_mute(message: Message, bot: Bot, command: CommandObject | None=Non
 
 @main_router.message(Command(commands=['help']))
 async def cmd_help(message: Message) -> Any:
-    await message.answer('Help!')
+    await message.answer("Что? Тебе нужна помощь?\n\nПопрубуй позвонить 911 хз")
 
 
 @main_router.message(Command(commands=['all_commands']))
 async def cmd_all_commands(message: Message) -> Any:
-    await message.answer('All commands!')
+    await message.answer("Вот все команды: /help, /ban, /mute")
 
 
 @main_router.message(F.text)

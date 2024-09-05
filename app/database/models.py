@@ -36,14 +36,6 @@ class User(Base):
     city: Mapped[Optional[str]]
 
 
-class commandText(Base):
-    __tablename__ = 'commands'
-
-    id: Mapped[intpk]
-    welcome: Mapped[Optional[str]]
-    rules: Mapped[Optional[str]]
-
-
 async def async_main() -> None:
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
