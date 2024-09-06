@@ -18,7 +18,8 @@ triggers = ["пидор", "скот"]
 
 @main_router.message(CommandStart())
 async def cmd_start(message: Message) -> Any:
-    await rq.set_user(chat_name=message.chat.title, chat_id=message.chat.id, user_id=message.from_user.id)
+    await rq.set_chat(chat_name=message.chat.title, chat_id=message.chat.id)
+    await rq.set_user(chat_id=message.chat.id, user_id=message.from_user.id)
     await message.answer("Ну, здарова, Отец!")
 
 
@@ -48,9 +49,9 @@ async def cmd_mute(message: Message, bot: Bot, command: CommandObject | None=Non
         await message.answer(f"{mention} завалил ебальничек!")
 
 
-@main_router.message(Command(commands=['help']))
-async def cmd_help(message: Message) -> Any:
-    await message.answer("Что? Тебе нужна помощь?\n\nПопрубуй позвонить 911 хз")
+@main_router.message(Command(commands=['shop']))
+async def cmd_shop(message: Message) -> Any:
+    await message.answer("Тут будет магазин")
 
 
 @main_router.message(Command(commands=['all_commands']))
@@ -58,12 +59,6 @@ async def cmd_all_commands(message: Message) -> Any:
     await message.answer("Вот все команды: /help, /ban, /mute")
 
 
-@main_router.message(F.text)
-async def profinity_filter(message: Message) -> Any:
-    for word in message.text.lower().strip().split():
-        parsed_morph = morch.parse(word)[0]
-        normal_form = parsed_morph.normal_form
-
-        for trigger in triggers:
-            if trigger in normal_form:
-                return await message.reply("Сам такой, сучара")
+@main_router.message(Command(commands=['help']))
+async def cmd_help(message: Message) -> Any:
+    await message.answer("Что? Тебе нужна помощь?\n\nПопрубуй позвонить 911 хз")

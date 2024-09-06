@@ -32,6 +32,7 @@ class User(Base):
     health: Mapped[int]
     happiness: Mapped[int]
     fatigue: Mapped[int]
+    money: Mapped[int]
     gender: Mapped[Optional[int]]
     city: Mapped[Optional[str]]
 
