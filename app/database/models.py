@@ -37,6 +37,19 @@ class User(Base):
     city: Mapped[Optional[str]]
 
 
+class Item(Base):
+    __tablename__ = 'items'
+
+    id: Mapped[intpk]
+    user_id: Mapped[int]
+    chat_id: Mapped[int]
+    scooby_snack: Mapped[int]
+    five_for_threehundred: Mapped[int]
+    lutex_suit: Mapped[bool]
+    crusader_suit: Mapped[bool]
+    clown_suit: Mapped[bool]
+
+
 async def async_main() -> None:
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

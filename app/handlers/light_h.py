@@ -6,7 +6,6 @@ from contextlib import suppress
 from aiogram.types import Message
 from aiogram import Router, F, Bot
 from aiogram.exceptions import TelegramBadRequest
-from sqlalchemy.orm.exc import DetachedInstanceError
 
 import app.database.requests as rq
 import app.database.models as md
@@ -20,21 +19,38 @@ light_router.message.filter(F.chat.type == 'supergroup')
 bot = Bot(token=os.getenv('TOKEN'))
 
 
-@light_router.message()
+@light_router.message(F.text.lower() == 'ударить')
 async def punch(message: Message) -> Any:
     reply = message.reply_to_message
-    if "ударить" in message.text.lower():
-        if not reply:
-            await message.answer(f"{message.from_user.first_name}, отставить избиение!")
-        mention = reply.from_user.mention_html(reply.from_user.first_name)
-        user = await rq.get_user(reply.from_user.id)
+    if not reply:
+        await message.answer(f"{message.from_user.first_name}, отставить избиение!")
+    mention = reply.from_user.mention_html(reply.from_user.first_name)
+    user = await rq.get_user(reply.from_user.id)
 
-        with suppress(TelegramBadRequest):
+    with suppress(TelegramBadRequest):
+        if user.health >= 0:
             user.health -= 10
+        elif user.health < 0:
+            user.health = 0
+        if user.happiness >= 0:
             user.happiness -= 5
-            user.fatigue += 3
-            async with md.async_session() as session:               
-                await session.merge(user)
-                await session.commit()
-            await message.answer(f"{message.from_user.first_name} ударил {mention}")
-            await pc.check_fatigue(fatigue=user.fatigue, message=message, mention=mention, bot=bot, chat_id=message.chat.id, user_id=reply.from_user.id)
+        elif user.happiness < 0:
+            user.happiness = 0
+        async with md.async_session() as session:               
+            await session.merge(user)
+            await session.commit()
+        await message.answer(f"{message.from_user.first_name} ударил {mention}", parse_mode="HTML")
+        await pc.check_fatigue(fatigue=user.fatigue, message=message, mention=mention, bot=bot, chat_id=message.chat.id, user_id=reply.from_user.id)
+
+
+@light_router.message(lambda message: any(phrase in message.text.lower() for phrase in ['убить себя', 'самоубийство', 'суицид']))
+async def kill_yourself(message: Message) -> Any:
+    user = await rq.get_user(message.from_user.id)
+    mention = message.from_user.mention_html(message.from_user.first_name)
+
+    with suppress(TelegramBadRequest):
+        user.health = 0
+        async with md.async_session() as session:
+            await session.merge(user)
+            await session.commit()
+        await message.answer(f"{mention} захуярил себя!", parse_mode="HTML")
