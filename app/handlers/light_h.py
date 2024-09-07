@@ -1,16 +1,20 @@
 import os
+import tracemalloc
 from typing import Any
 from dotenv import load_dotenv
 from contextlib import suppress
 from aiogram.types import Message
 from aiogram import Router, F, Bot
 from aiogram.exceptions import TelegramBadRequest
+from sqlalchemy.orm.exc import DetachedInstanceError
 
 import app.database.requests as rq
 import app.database.models as md
 import app.helpers.processing as pc
 
 
+load_dotenv()
+tracemalloc.start()
 light_router = Router()
 light_router.message.filter(F.chat.type == 'supergroup')
 bot = Bot(token=os.getenv('TOKEN'))
@@ -29,8 +33,8 @@ async def punch(message: Message) -> Any:
             user.health -= 10
             user.happiness -= 5
             user.fatigue += 3
-            await md.async_session().commit()
+            async with md.async_session() as session:               
+                await session.merge(user)
+                await session.commit()
             await message.answer(f"{message.from_user.first_name} ударил {mention}")
-            if user.fatigue >= 100:
-                await message.answer(f"{mention} заебался и теперь валяется без возможности двигать всемисвоими мышцами (даже языком)")
-                pc.recovery_fatigue(bot=bot, chat_id=message.chat.id, user_id=reply.from_user.id)
+            await pc.check_fatigue(fatigue=user.fatigue, message=message, mention=mention, bot=bot, chat_id=message.chat.id, user_id=reply.from_user.id)
