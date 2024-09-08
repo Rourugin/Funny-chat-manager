@@ -3,7 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 
 from app.database.models import async_session
-from app.database.models import Chat, User
+from app.database.models import Chat, User, Item
 
 
 async def set_chat(chat_name: str, chat_id: int) -> Any:
@@ -42,8 +42,38 @@ async def set_user(chat_id: int, user_id: int) -> Any:
         await session.commit()
 
 
+async def set_item(chat_id: int, user_id: int) -> Any:
+    query = select(Item).where(Item.user_id == user_id)
+    async with async_session() as session:
+        result = await session.execute(query)
+        item = result.scalar()
+        if item is not None:
+            return None
+        obj_item = Item(
+            user_id=user_id,
+            chat_id=chat_id,
+            scooby_snack=0,
+            five_for_threehundred=0,
+            lutex_suit=False,
+            clown_suit=False,
+            crusader_suit=False
+        )
+        session.add(obj_item)
+        await session.commit()
+
+
 async def get_user(user_id: int) -> User | None:
     query = select(User).where(User.user_id == user_id)
+    async with async_session() as session:
+        result = await session.execute(query)
+        try:
+            return result.scalar()
+        except NoResultFound:
+            return None
+
+
+async def get_item(user_id: int) -> Item | None:
+    query = select(Item).where(Item.user_id == user_id)
     async with async_session() as session:
         result = await session.execute(query)
         try:

@@ -17,6 +17,7 @@ main_router.message.filter(F.chat.type == 'supergroup')
 async def cmd_start(message: Message) -> Any:
     await rq.set_chat(chat_name=message.chat.title, chat_id=message.chat.id)
     await rq.set_user(chat_id=message.chat.id, user_id=message.from_user.id)
+    await rq.set_item(chat_id=message.chat.id, user_id=message.from_user.id)
     await message.answer("Ну, здарова, Отец!")
 
 

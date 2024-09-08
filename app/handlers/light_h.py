@@ -7,8 +7,8 @@ from aiogram.types import Message
 from aiogram import Router, F, Bot
 from aiogram.exceptions import TelegramBadRequest
 
-import app.database.requests as rq
 import app.database.models as md
+import app.database.requests as rq
 import app.helpers.processing as pc
 
 
