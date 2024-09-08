@@ -33,7 +33,9 @@ class User(Base):
     happiness: Mapped[int]
     fatigue: Mapped[int]
     money: Mapped[int]
-    gender: Mapped[Optional[int]]
+    suit: Mapped[Optional[str]]
+    nation: Mapped[Optional[str]]
+    gender: Mapped[Optional[str]]
     city: Mapped[Optional[str]]
 
 
@@ -45,7 +47,7 @@ class Item(Base):
     chat_id: Mapped[int]
     scooby_snack: Mapped[int]
     five_for_threehundred: Mapped[int]
-    lutex_suit: Mapped[bool]
+    latex_suit: Mapped[bool]
     crusader_suit: Mapped[bool]
     clown_suit: Mapped[bool]
 

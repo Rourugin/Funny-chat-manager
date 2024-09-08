@@ -6,11 +6,15 @@ async def set_commands(bot: Bot) -> None:
     commands = [
         BotCommand(
             command="shop",
-            description="shop"
+            description="магазин"
+        ),
+        BotCommand(
+            command="profile",
+            description="профиль"
         ),
         BotCommand(
             command="all_commands", 
-            description="all commands list"
+            description="список команд"
         )
     ]
 

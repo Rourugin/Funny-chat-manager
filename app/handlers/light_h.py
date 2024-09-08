@@ -24,7 +24,8 @@ async def punch(message: Message) -> Any:
     reply = message.reply_to_message
     if not reply:
         await message.answer(f"{message.from_user.first_name}, отставить избиение!")
-    mention = reply.from_user.mention_html(reply.from_user.first_name)
+    mention_victim = reply.from_user.mention_html(reply.from_user.first_name)
+    mention_attacking = message.from_user.mention_html(message.from_user.first_name)
     user = await rq.get_user(reply.from_user.id)
 
     with suppress(TelegramBadRequest):
@@ -32,15 +33,19 @@ async def punch(message: Message) -> Any:
             user.health -= 10
         elif user.health < 0:
             user.health = 0
-        if user.happiness >= 0:
-            user.happiness -= 5
-        elif user.happiness < 0:
-            user.happiness = 0
+        if user.suit == "Латексный костюм":
+            user.happiness += 5
+            await message.answer(f"Блягодаря латексному костюму {mention_victim} получил удовольствие", parse_mode="HTML")
+        elif user.suit != "Латексный костюм":
+            if user.happiness >= 0:
+                user.happiness -= 5
+            elif user.happiness < 0:
+                user.happiness = 0
         async with md.async_session() as session:               
             await session.merge(user)
             await session.commit()
-        await message.answer(f"{message.from_user.first_name} ударил {mention}", parse_mode="HTML")
-        await pc.check_fatigue(fatigue=user.fatigue, message=message, mention=mention, bot=bot, chat_id=message.chat.id, user_id=reply.from_user.id)
+        await message.answer(f"{mention_attacking} ударил {mention_victim}", parse_mode="HTML")
+        await pc.check_fatigue(fatigue=user.fatigue, message=message, mention=mention_victim, bot=bot, chat_id=message.chat.id, user_id=reply.from_user.id)
 
 
 @light_router.message(lambda message: any(phrase in message.text.lower() for phrase in ['убить себя', 'самоубийство', 'суицид']))

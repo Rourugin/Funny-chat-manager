@@ -75,7 +75,7 @@ async def buy_latex(callback: CallbackQuery) -> Any:
     item = await rq.get_item(callback.from_user.id)
     if user.money >= 1000:
         user.money -= 1000
-        item.lutex_suit = True
+        item.latex_suit = True
         async with md.async_session() as session:
             await session.merge(user)
             await session.merge(item)

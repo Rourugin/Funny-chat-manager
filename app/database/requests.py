@@ -54,9 +54,9 @@ async def set_item(chat_id: int, user_id: int) -> Any:
             chat_id=chat_id,
             scooby_snack=0,
             five_for_threehundred=0,
-            lutex_suit=False,
-            clown_suit=False,
-            crusader_suit=False
+            latex_suit=False,
+            crusader_suit=False,
+            clown_suit=False
         )
         session.add(obj_item)
         await session.commit()
