@@ -38,7 +38,7 @@ async def cmd_mute(message: Message, bot: Bot, command: CommandObject | None=Non
 
 @main_router.message(Command(commands=['all_commands']))
 async def cmd_all_commands(message: Message) -> Any:
-    await message.answer("Вот все команды: /shop\n/profile\n\nА также текстовые команды:\nударить\nсуицид\\самоубийство\\убить себя")
+    await message.answer("Вот все команды:\n/shop\n/profile\n\nА также текстовые команды:\nударить\nсуицид\\самоубийство\\убить себя\nлизб\\лизнуть")
 
 @main_router.message(Command(commands=['profile']))
 async def cmd_profile(message: Message) -> Any:
@@ -136,50 +136,62 @@ async def clothes_profile(callback: CallbackQuery) -> Any:
     if item.latex_suit == False and item.crusader_suit == False and item.clown_suit == False:
         await callback.message.answer(f"{mention}, у тебя нет одежды", parse_mode="HTML")
     elif item.latex_suit == True and item.crusader_suit == False and item.clown_suit == False:
-        await callback.message.answer(f"{mention}, в твоём гардеробе:\nЛатекс", parse_mode="HTML", reply_markup=pk.lutex)
+        await callback.message.answer(f"{mention}, в твоём гардеробе:\nЛатекс", parse_mode="HTML", reply_markup=pk.latex)
     elif item.latex_suit == False and item.crusader_suit == True and item.clown_suit == False:
         await callback.message.answer(f"{mention}, в твоём гардеробе:\nКостюм крестоносца", parse_mode="HTML", reply_markup=pk.crusader)
     elif item.latex_suit == False and item.crusader_suit == False and item.clown_suit == True:
         await callback.message.answer(f"{mention}, в твоём гардеробе:\nКостюм клоуна", parse_mode="HTML", reply_markup=pk.clown)
     elif item.latex_suit == True and item.crusader_suit == True and item.clown_suit == False:
-        await callback.message.answer(f"{mention}, в твоём гардеробе:\nЛатекс\nКостюм крестоносца", parse_mode="HTML", reply_markup=pk.lutex_crusader)
+        await callback.message.answer(f"{mention}, в твоём гардеробе:\nЛатекс\nКостюм крестоносца", parse_mode="HTML", reply_markup=pk.latex_crusader)
     elif item.latex_suit == True and item.crusader_suit == False and item.clown_suit == True:
-        await callback.message.answer(f"{mention}, в твоём гардеробе:\nЛатекс\nКостюм клоуна", parse_mode="HTML", reply_markup=pk.lutex_clown)
+        await callback.message.answer(f"{mention}, в твоём гардеробе:\nЛатекс\nКостюм клоуна", parse_mode="HTML", reply_markup=pk.latex_clown)
     elif item.latex_suit == False and item.crusader_suit == True and item.clown_suit == True:
         await callback.message.answer(f"{mention}, в твоём гардеробе:\nКостюм крестоносца\nКостюм клоуна", parse_mode="HTML", reply_markup=pk.crusader_clown)
     elif item.latex_suit == True and item.crusader_suit == True and item.clown_suit == True:
-        await callback.message.answer(f"{mention}, в твоём гардеробе:\nЛатекс\nКостюм крестоносца\nКостюм клоуна", parse_mode="HTML", reply_markup=pk.lutex_crusader_clown)
+        await callback.message.answer(f"{mention}, в твоём гардеробе:\nЛатекс\nКостюм крестоносца\nКостюм клоуна", parse_mode="HTML", reply_markup=pk.latex_crusader_clown)
     await callback.answer(None)
 
 
 @main_router.callback_query(F.data == 'wear_latex')
 async def wear_latex(callback: CallbackQuery) -> Any:
     user = await rq.get_user(callback.from_user.id)
-    user.suit = "Латексный костюм"
-    async with md.async_session() as session:
-        await session.merge(user)
-        await session.commit()
-    await callback.answer(None)
-    await callback.message.answer("Латексный костюм надет, твоя привлекательность явно выросла")
+    item = await rq.get_item(callback.from_user.id)
+    if item.latex_suit == True:
+        user.suit = "Латексный костюм"
+        async with md.async_session() as session:
+            await session.merge(user)
+            await session.commit()
+        await callback.answer(None)
+        await callback.message.answer("Латексный костюм надет, твоя привлекательность явно выросла")
+    elif item.latex_suit == False:
+        await callback.message.answer("У тебя нет латексного костюма")
 
 
 @main_router.callback_query(F.data == 'wear_crusader')
 async def wear_crusader(callback: CallbackQuery) -> Any:
     user = await rq.get_user(callback.from_user.id)
-    user.suit = "Костюм крестоносца"
-    async with md.async_session() as session:
-        await session.merge(user)
-        await session.commit()
-    await callback.answer(None)
-    await callback.message.answer("Костюм крестоносца надет, пора устраивать поход на священную землю и освобождать её от еретиков!")
+    item = await rq.get_item(callback.from_user.id)
+    if item.crusader_suit == True:
+        user.suit = "Костюм крестоносца"
+        async with md.async_session() as session:
+            await session.merge(user)
+            await session.commit()
+        await callback.answer(None)
+        await callback.message.answer("Костюм крестоносца надет, пора устраивать поход на священную землю и освобождать её от еретиков!")
+    elif item.crusader_suit == False:
+        await callback.message.answer("У тебя нет костюма крестоносца")
 
 
 @main_router.callback_query(F.data == 'wear_clown')
 async def wear_clown(callback: CallbackQuery) -> Any:
     user = await rq.get_user(callback.from_user.id)
-    user.suit = "Клоунский костюм"
-    async with md.async_session() as session:
-        await session.merge(user)
-        await session.commit()
-    await callback.answer(None)
-    await callback.message.answer("Клоунский костюм надет, ебать ты, конечно, клоун, хонк-хонк блять!")
+    item = await rq.get_item(callback.from_user.id)
+    if item.clown_suit == True:
+        user.suit = "Клоунский костюм"
+        async with md.async_session() as session:
+            await session.merge(user)
+            await session.commit()
+        await callback.answer(None)
+        await callback.message.answer("Клоунский костюм надет, ебать ты, конечно, клоун, хонк-хонк блять!")
+    elif item.clown_suit == False:
+        await callback.message.answer("У тебя нет костюма клоуна")

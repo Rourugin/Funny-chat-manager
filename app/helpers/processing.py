@@ -6,6 +6,9 @@ from datetime import datetime, timedelta
 from aiogram.types import ChatPermissions
 
 
+prostitute_ptice = 0
+
+
 def parse_time(time_string: str | None) -> datetime | None:
     if not time_string:
         return None
@@ -33,6 +36,8 @@ async def check_fatigue(fatigue: int, message: Message, mention: str, bot: Bot, 
         until_date = parse_time("5m")
         await message.answer(f"{mention} заебался и теперь валяется без возможности двигать всеми своими мышцами (даже языком)", parse_mode="HTML")
         await bot.restrict_chat_member(chat_id=chat_id, user_id=user_id, until_date=until_date, permissions=ChatPermissions(can_send_messages=False))
+    elif fatigue < 100:
+        return None
 
 
 async def death(health: int, message: Message, mention: str, bot: Bot, chat_id: int, user_id: int) -> Any:
@@ -40,3 +45,16 @@ async def death(health: int, message: Message, mention: str, bot: Bot, chat_id: 
         until_date = parse_time("5m")
         await message.answer(f"{mention} умер (ебать лошок)", parse_mode="HTML")
         await bot.restrict_chat_member(chat_id=chat_id, user_id=user_id, until_date=until_date, permissions=ChatPermissions(can_send_messages=False))
+    elif health > 0:
+        return None
+
+
+async def set_price(price: int) -> None:
+    global prostitute_ptice
+    prostitute_ptice = price
+    return None
+
+
+async def get_price() -> int:
+    global prostitute_ptice
+    return prostitute_ptice
