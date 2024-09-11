@@ -34,6 +34,7 @@ class User(Base):
     fatigue: Mapped[int]
     money: Mapped[int]
     rate: Mapped[int]
+    bullets: Mapped[int]
     suit: Mapped[Optional[str]]
     nation: Mapped[Optional[str]]
     gender: Mapped[Optional[str]]

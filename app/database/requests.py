@@ -36,6 +36,7 @@ async def set_user(chat_id: int, user_id: int) -> Any:
             fatigue=0,
             money=1000,
             rate=0,
+            bullets=0,
             suit=None,
             nation=None,
             gender=None,

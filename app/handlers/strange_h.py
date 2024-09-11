@@ -20,10 +20,10 @@ strange_router = Router()
 strange_router.message.filter(F.chat.type == 'supergroup')
 
 
-@strange_router.message(F.text.lower() == 'glin-dilin')
+@strange_router.message(F.text.lower() == 'глинь-дилинь')
 async def nuclear_war(message: Message) -> Any:
-    war_frases = ["Clown in 3 a.m. is attacking!", "Burunya", "Shokonokonokokostantan"]
-    await message.answer("⚠️⚠️⚠️NUCLEAR WAR WILL START IN 10 SECONDS⚠️⚠️⚠️")
+    war_frases = ["Сосать Америка!", "Burunya", "Shokonokonokokostantan"]
+    await message.answer("⚠️⚠️⚠️ЯДЕРНАЯ ВОЙНА НАЧНЁТСЯ ЧЕРЕЗ 10 СЕКУНД⚠️⚠️⚠️")
     await asyncio.sleep(10)
     while True:
         await asyncio.sleep(0.5)
@@ -31,7 +31,7 @@ async def nuclear_war(message: Message) -> Any:
         await message.answer(random_frase)
 
 
-@strange_router.message(F.text.startswith('+gender'))
+@strange_router.message(F.text.startswith('+гендер'))
 async def new_gender(message: Message) -> Any:
     gender_space = message.text.find(' ')
     gender = message.text[gender_space + 1:]
@@ -46,11 +46,11 @@ async def new_gender(message: Message) -> Any:
         async with md.async_session() as session:
             await session.merge(item)
             await session.commit()
-        await message.answer("Well, you and the clown, of course, get a suit🤡")
-    await message.answer(f"Your new gender is: {user.gender}⚧️")
+        await message.answer("Ну, ты и клоун, конечно, лови костюм🤡")
+    await message.answer(f"Твой гендер: {user.gender}⚧️")
 
 
-@strange_router.message(F.text.startswith('+city'))
+@strange_router.message(F.text.startswith('+город'))
 async def new_city(message: Message) -> Any:
     city_space = message.text.find(' ')
     city = message.text[city_space + 1:]
@@ -59,17 +59,17 @@ async def new_city(message: Message) -> Any:
     async with md.async_session() as session:
         await session.merge(user)
         await session.commit()
-    if city.lower() == "jerusalem":
+    if city.lower() == "иерусалим":
         item = await rq.get_item(message.from_user.id)
         item.crusader_suit = True
         async with md.async_session() as session:
             await session.merge(item)
             await session.commit()
-        await message.answer("Let's return the Holy Land to the Holy Roman Empire!\nReceived the Crusader costume!")
-    await message.answer(f"Your new city is: {user.city}🏙️")
+        await message.answer("Вернём Священную землю Священной Римской Империи!\nПолучен костюм крестоносца!")
+    await message.answer(f"Твой город: {user.city}🏙️")
 
 
-@strange_router.message(F.text.startswith('+nation'))
+@strange_router.message(F.text.startswith('+национальность') | F.text.startswith('+нация'))
 async def new_nation(message: Message) -> Any:
     nation_space = message.text.find(' ')
     nation = message.text[nation_space + 1:]
@@ -78,26 +78,43 @@ async def new_nation(message: Message) -> Any:
     async with md.async_session() as session:
         await session.merge(user)
         await session.commit()
-    await message.answer(f"Your new nation is: {user.nation}👽")
+    await message.answer(f"Твоя национальность: {user.nation}👽")
 
 
-@strange_router.message(F.text.lower().contains('stalin'))
+@strange_router.message(F.text.lower().contains('сталин'))
 async def stalin(message: Message) -> Any:
     user = await rq.get_user(message.from_user.id)
     mention = message.from_user.mention_html(message.from_user.first_name)
     until_date = pc.parse_time("5m")
-    await message.reply("Shoot!")
+    await message.reply("Расстрелять!")
 
     with suppress(TelegramBadRequest):
         user.health = 0
         async with md.async_session() as session:
             await session.merge(user)
             await session.commit()
-        await message.answer(f"{mention} was shot by I.V. Stalin", parse_mode="HTML")
+        await message.answer(f"{mention} был расстрелен И. В. Сталином", parse_mode="HTML")
         await bot.restrict_chat_member(chat_id=message.chat.id, user_id=message.from_user.id, until_date=until_date, permissions=ChatPermissions(can_send_messages=False))
 
 
-@strange_router.message(F.text.lower().contains('i love putin'))
+@strange_router.message(F.text.lower().contains('гитлер'))
+async def hitler(message: Message) -> Any:
+    user = await rq.get_user(message.from_user.id)
+    mention = message.from_user.mention_html(message.from_user.first_name)
+    until_date = pc.parse_time("5m")
+    if (user.nation == 'еврей') or (user.nation == 'Еврей'):
+        await message.reply("В газовую камеру еврея!")
+
+        with suppress(TelegramBadRequest):
+            user.health = 0
+            async with md.async_session() as session:
+                await session.merge(user)
+                await session.commit()
+            await message.answer(f"{mention} сдох в газовой камере, не буди лихо, пока оно тихо", parse_mode="HTML")
+            await bot.restrict_chat_member(chat_id=message.chat.id, user_id=message.from_user.id, until_date=until_date, permissions=ChatPermissions(can_send_messages=False))
+
+
+@strange_router.message(F.text.lower().contains('я люблю путина'))
 async def putin(message: Message) -> Any:
     user = await rq.get_user(message.from_user.id)
     mention = message.from_user.mention_html(message.from_user.first_name)
@@ -107,12 +124,12 @@ async def putin(message: Message) -> Any:
         async with md.async_session() as session:
             await session.merge(user)
             await session.commit()
-        await message.answer(f"{mention} 100 rubles were transferred to your account from V.V. Putin", parse_mode="HTML")
+        await message.answer(f"{mention} вам на счёт переведено 100 рублей от В. В. Путиин", parse_mode="HTML")
 
 
 @strange_router.message(F.text.lower().contains('niggers are sucking') | F.text.lower().contains('niggers suck') | F.text.lower().contains('i am nigger'))
 async def nigger(message: Message) -> Any:
-    await message.reply("I will cancel you in X (Twitter)")
+    await message.reply("Будь мы в worns of armogedon, я бы тебя забанил, но сегодня дебе повезло")
 
 
 @strange_router.message(F.text.lower().contains('make america greate again'))
@@ -125,10 +142,10 @@ async def greate_america(message: Message) -> Any:
         async with md.async_session() as session:
             await session.merge(user)
             await session.commit()
-        await message.reply(f"{mention} was shot, you're not Trump", parse_mode="HTML")
+        await message.reply(f"{mention} был застрелен, ты ж не Трамп ей бог", parse_mode="HTML")
     elif shot_chance > 0:
         user.health -= 5
         async with md.async_session() as session:
             await session.merge(user)
             await session.commit()
-        await message.answer(f"{mention}, today you were lucky, but someone still got shot in the ear", parse_mode="HTML")
+        await message.answer(f"{mention} сегодня тебе повезло, однако кому-то всё же прострелили ухо", parse_mode="HTML")
