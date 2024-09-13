@@ -9,7 +9,7 @@ main = InlineKeyboardMarkup(inline_keyboard=[
 
 eat = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Скуби Снэк', callback_data='eat_scooby_snack'),
-    InlineKeyboardButton(text='5 за 3', callback_data='eat_five_for_three')],
+    InlineKeyboardButton(text='5 за 300', callback_data='eat_five_for_three')],
     [InlineKeyboardButton(text='Назад', callback_data='back_prof')]
 ])
 

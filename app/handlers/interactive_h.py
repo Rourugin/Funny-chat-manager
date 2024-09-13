@@ -67,7 +67,7 @@ async def lick(message: Message) -> Any:
     reply = message.reply_to_message
     mention_first = message.from_user.mention_html(message.from_user.first_name)
     if not reply:
-        await message.answer(f"{mention_first}, нельзя лизать самого себя!")
+        await message.answer(f"{mention_first}, нельзя лизать самого себя!", parse_mode="HTML")
     mention_second = reply.from_user.mention_html(reply.from_user.first_name)
     user = await rq.get_user(reply.from_user.id)
 
